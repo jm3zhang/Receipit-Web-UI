@@ -1,4 +1,5 @@
 var authToken;
+var budget = 6584.33;
 $.ajax({
         url: "https://receipit-rest-api.herokuapp.com/auth/login",
         type: "POST",
@@ -27,6 +28,7 @@ $.ajax({
                     var numTrans = 0;
                     var lastTotalExpense = 0;
                     var lastNumTrans = 0;
+                    var lastAvg = 0;
                     console.log(data.receipts);
                     if(data.receipts != undefined){
                         for(var receipt of data.receipts){
@@ -52,6 +54,7 @@ $.ajax({
                         }).done(function(data){
                             lastTotalExpense = 0;
                             lastNumTrans = 0;
+                            lastAvg = 0;
                             if(data.receipts != undefined){
                                 for(var receipt of data.receipts){
                                     lastTotalExpense += parseFloat(receipt.total_amount);
@@ -62,14 +65,12 @@ $.ajax({
                                 lastNumTrans = 1;
                             }
                             if((numTrans/lastNumTrans) == Infinity){
-                                lastNumTrans = 1;
+                                lastNumTrans = 100;
                             }
-                            console.log(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)));
                             // console.log((totalExpense/numTrans));
                             // console.log((lastTotalExpense/lastNumTrans));
-                            if(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)) == NaN){
-                                
-                                console.log(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)));
+                            if(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)) == Infinity){
+                                lastAvg = 100;
                             }
                         });
 

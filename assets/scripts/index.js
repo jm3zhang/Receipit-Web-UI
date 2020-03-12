@@ -1,5 +1,6 @@
 var authToken;
 var budget = 6584.33;
+
 $.ajax({
         url: "https://receipit-rest-api.herokuapp.com/auth/login",
         type: "POST",
@@ -9,7 +10,113 @@ $.ajax({
             data = JSON.parse(data);
             var user_id = data.userInfo.user_id;
             var authToken = data.authToken;
+            document.getElementById("user-name").innerHTML = data.userInfo.first_name + " " + data.userInfo.last_name;
+            document.getElementById("user-email").innerHTML = data.userInfo.email;
+            
             var date = new Date();
+
+
+            console.log("sheile");
+            $.when(
+                $.ajax({
+                    url: "https://receipit-rest-api.herokuapp.com/receipt",
+                    type: "GET",
+                    data: {
+                        "userId": user_id,
+                        "startDate": new Date(date.getFullYear(), date.getMonth(), 1),
+                        "endDate": date},
+                    headers: { 'Authorization': authToken },
+                    dataType: "json"
+                    }), 
+                $.ajax({
+                    url: "https://receipit-rest-api.herokuapp.com/receipt",
+                    type: "GET",
+                    data: {
+                        "userId": user_id,
+                        "startDate": new Date(date.getFullYear(), date.getMonth() - 1, 1),
+                        "endDate": new Date(date.getFullYear(), date.getMonth(), 0)},
+                    headers: { 'Authorization': authToken },
+                    dataType: "json"
+                    }), 
+                $.ajax({
+                    url: "https://receipit-rest-api.herokuapp.com/receipt",
+                    type: "GET",
+                    data: {
+                        "userId": user_id,
+                        "startDate": new Date(date.getFullYear(), date.getMonth() - 2, 1),
+                        "endDate": new Date(date.getFullYear(), date.getMonth() - 1, 0)},
+                    headers: { 'Authorization': authToken },
+                    dataType: "json"
+                    }), 
+                $.ajax({
+                    url: "https://receipit-rest-api.herokuapp.com/receipt",
+                    type: "GET",
+                    data: {
+                        "userId": user_id,
+                        "startDate": new Date(date.getFullYear(), date.getMonth() - 3, 1),
+                        "endDate": new Date(date.getFullYear(), date.getMonth() - 2, 0)},
+                    headers: { 'Authorization': authToken },
+                    dataType: "json"
+                    }),
+                $.ajax({
+                    url: "https://receipit-rest-api.herokuapp.com/receipt",
+                    type: "GET",
+                    data: {
+                        "userId": user_id,
+                        "startDate": new Date(date.getFullYear(), date.getMonth() - 4, 1),
+                        "endDate": new Date(date.getFullYear(), date.getMonth() - 3, 0)},
+                    headers: { 'Authorization': authToken },
+                    dataType: "json"
+                    }),
+                $.ajax({
+                    url: "https://receipit-rest-api.herokuapp.com/receipt",
+                    type: "GET",
+                    data: {
+                        "userId": user_id,
+                        "startDate": new Date(date.getFullYear(), date.getMonth() - 5, 1),
+                        "endDate": new Date(date.getFullYear(), date.getMonth() - 4, 0)},
+                    headers: { 'Authorization': authToken },
+                    dataType: "json"
+                    }))
+            .then(function(a1, a2, a3, a4, a5, a6){
+                console.log("cainima");
+                console.log(a1);
+                console.log(a2);
+                console.log(a3);
+                console.log(a4);
+                console.log(a5);
+                console.log(a6);
+            });
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             $.ajax({
                 url: "https://receipit-rest-api.herokuapp.com/receipt",
                 type: "GET",
@@ -18,11 +125,11 @@ $.ajax({
                     "startDate": new Date(date.getFullYear(), date.getMonth(), 1),
                     "endDate": date},
                 headers: { 'Authorization': authToken },
-                dataType: "html"
+                dataType: "json"
                 }).done(function(data){
                     
                     data = JSON.parse(data);
-                    console.log(data);
+                    // console.log(data);
 
                     var totalExpense = 0;
                     var numTrans = 0;
@@ -48,7 +155,7 @@ $.ajax({
                         data: {
                             "userId": user_id,
                             "startDate": new Date(date.getFullYear(), date.getMonth() - 1, 1),
-                            "endDate": new Date(date.getFullYear(), date.getMonth(), 1)},
+                            "endDate": new Date(date.getFullYear(), date.getMonth() - 1, 0)},
                         headers: { 'Authorization': authToken },
                         dataType: "html"
                         }).done(function(data){
@@ -165,7 +272,7 @@ ctxExpenditureReport.height(200);
 var expenditureReportChart = new Chart(ctxExpenditureReport, {
     type: 'bar',
     data: {
-        labels: ["January", "February", "March", "April", "May", "June"],
+        labels: ["October", "November", "December", "January", "February", "March"],
         datasets: [
             {
 				label: "Groceries",
@@ -545,4 +652,15 @@ function viewDetial(id) {
     var url = currentUrl.substr(0, currentUrl.lastIndexOf("/")) + "/detail.html?id=" + id;
     document.location.href = url;
 }
+
+// search
+$('#transaction-search-bar').keyup(function() {
+    var $rows = $('#recent-transaction-table-body tr');
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    
+    $rows.show().filter(function() {
+        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+    }).hide();
+});
 

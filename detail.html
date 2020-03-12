@@ -67,18 +67,18 @@
                         <button class="close"></button>
                     </div>
                     <ul class="header-menu nav">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="javascript:void(0);" class="nav-link">
                                 <i class="nav-link-icon fa fa-database"> </i> Statistics
                             </a>
-                        </li>
+                        </li> -->
                         <li class="dropdown nav-item">
                             <a href="javascript:void(0);" class="nav-link" id="ui-settings-btn">
                                 <i class="nav-link-icon fa fa-cog"></i> Layout Settings
                             </a>
                         </li>
                         <li class="dropdown nav-item">
-                            <a href="javascript:void(0);" onclick="printReceipt(recceipt_url)" class="nav-link" id="print-page-btn">
+                            <a href="javascript:void(0);" onclick="printPage()" class="nav-link" id="print-page-btn">
                                 <i class="nav-link-icon fa fa-print"></i> Print     
                             </a>
                         </li>
@@ -92,23 +92,23 @@
                                     <div class="btn-group">
                                         <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
                                             <img width="42" class="rounded-circle" src="assets/images/avatars/1.jpg" alt="">
-                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                                            <!-- <i class="fa fa-angle-down ml-2 opacity-8"></i> -->
                                         </a>
-                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                                        <!-- <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
                                             <button type="button" tabindex="0" class="dropdown-item">User Account</button>
                                             <button type="button" tabindex="0" class="dropdown-item">Settings</button>
                                             <h6 tabindex="-1" class="dropdown-header">Header</h6>
                                             <button type="button" tabindex="0" class="dropdown-item">Actions</button>
                                             <div tabindex="-1" class="dropdown-divider"></div>
                                             <button type="button" tabindex="0" class="dropdown-item">Dividers</button>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                                 <div class="widget-content-left  ml-3 header-user-info">
-                                    <div class="widget-heading">
+                                    <div class="widget-heading" id="user-name">
                                         User Name
                                     </div>
-                                    <div class="widget-subheading">
+                                    <div class="widget-subheading" id="user-email">
                                         User Account Position
                                     </div>
                                 </div>
@@ -124,9 +124,9 @@
             </div>
         </div>
         <div class="ui-theme-settings">
-            <button type="button" id="TooltipDemo" class="btn-open-options btn btn-warning">
+            <!-- <button type="button" id="TooltipDemo" class="btn-open-options btn btn-warning">
                 <i class="fa fa-cog fa-w-16 fa-spin fa-2x"></i>
-            </button>
+            </button> -->
             <div class="theme-settings__inner">
                 <div class="scrollbar-container">
                     <div class="theme-settings__options-wrapper">
@@ -648,7 +648,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="main-card mb-3 card">
-                                <div class="card-header">Transaction
+                                <div class="card-header">ITEMS PURCHASED
                                     <!-- <div class="btn-actions-pane-right">
                                         <div role="group" class="btn-group-sm btn-group">
                                             <button class="active btn btn-focus">Last Week</button>
@@ -661,11 +661,11 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-center" onclick="sortByIndex()">#</th>
-                                                <th onclick="sortByStore()">Store Location</th>
+                                                <th onclick="sortByStore()">Product Name</th>
                                                 <th class="text-center" onclick="sortByDate()">Date</th>
-                                                <th class="text-center" onclick="sortByPayment()">Payment</th>
-                                                <th class="text-center">Status</th>
-                                                <th class="text-center">Actions</th>
+                                                <th class="text-center" onclick="sortByPayment()">Price</th>
+                                                <th class="text-center">Currency</th>
+                                                <th class="text-center">Quantity</th>
                                             </tr>
                                         </thead>
                                         <tbody id="detail-table-body"> 
@@ -680,7 +680,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="main-card mb-3 card">
                                 <div class="card-body"><h5 class="card-title">Items Purchased</h5>
                                     <div class="row">
@@ -756,11 +756,18 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6" height="50">
-                            <div class="main-card mb-6 card">
+                        </div> -->
+                        <div class="col-md-12" height="50">
+                            <div class="main-card mb-12 card">
+                                <div class="card-header">Receipt Image
+                                    <div class="btn-actions-pane-right">
+                                        <div role="group" class="btn-group-sm btn-group">
+                                            <button class="active btn btn-focus" onclick="printReceipt(recceipt_url)">Download Image</button>
+                                            <!-- <button class="btn btn-focus">All Month</button> -->
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">Receipt Image</h5>
                                     <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel">
                                         <div class="carousel-inner">
                                             <div class="carousel-item active">
@@ -787,7 +794,7 @@
                             <div class="app-footer-left">
                                 <ul class="nav">
                                     <li class="nav-item">
-                                        <a href="javascript:void(0);" onclick="printReceipt(recceipt_url)" class="nav-link">
+                                        <a href="javascript:void(0);" onclick="printPage()" class="nav-link">
                                                 Print Page
                                             </a>
                                     </li>
@@ -806,10 +813,10 @@
                                             </a>
                                     </li> -->
                                     <li class="nav-item">
-                                        <a href="javascript:void(0);" class="nav-link">
-                                            <div class="badge badge-success mr-1 ml-0">
+                                        <a href="https://github.com/ReceiptIt" class="nav-link">
+                                            <!-- <div class="badge badge-success mr-1 ml-0">
                                                 <small>NEW</small>
-                                            </div>
+                                            </div> -->
                                             About Us
                                         </a>
                                     </li>

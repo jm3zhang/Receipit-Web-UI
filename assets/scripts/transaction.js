@@ -9,6 +9,8 @@ var user = $.ajax({
             data = JSON.parse(data);
             var user_id = data.userInfo.user_id;
             var authToken = data.authToken;
+            document.getElementById("user-name").innerHTML = data.userInfo.first_name + " " + data.userInfo.last_name;
+            document.getElementById("user-email").innerHTML = data.userInfo.email;
             var receipts = $.ajax({
                 url: "https://receipit-rest-api.herokuapp.com/receipt?userId=" + user_id,
                 type: "GET",

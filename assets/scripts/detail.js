@@ -10,8 +10,11 @@ $.ajax({
     dataType: "html"
     }).done(function(data){
         data = JSON.parse(data);
+        console.log(data);
         var user_id = data.userInfo.user_id;
         var authToken = data.authToken;
+        document.getElementById("user-name").innerHTML = data.userInfo.first_name + " " + data.userInfo.last_name;
+        document.getElementById("user-email").innerHTML = data.userInfo.email;
         $.ajax({
             url: "https://receipit-rest-api.herokuapp.com/receipt?userId=" + user_id,
             type: "GET",
@@ -42,14 +45,10 @@ $.ajax({
                             tableHtml = tableHtml + '<tr>' + 
                                                     '<td class="text-center text-muted">' + counter + '</td>' + 
                                                     '<td >' + product.name + '</td>' + 
-                                                    '<td class="text-center">' + new Date(product.createdAt) + '</td>' + 
+                                                    '<td class="text-center">' + new Date(data.purchase_date) + '</td>' + 
                                                     '<td class="text-center">$ ' + product.price+ '</td>' + 
-                                                    '<td class="text-center">' + 
-                                                        '<div class="badge badge-success">Completed</div>' + 
-                                                    '</td>' + 
-                                                    '<td class="text-center">' + 
-                                                        '<button type="button" onclick="displayAll()" class="btn btn-primary btn-sm">Display All </button>' +
-                                                    '</td>' + 
+                                                    '<td class="text-center">' + product.currency_code+ '</td>' + 
+                                                    '<td class="text-center">' + product.quantity+ '</td>' + 
                                                 '</tr>';
                             counter ++;
                         }
@@ -76,7 +75,7 @@ function printPage() {
 
 function printReceipt(url) {
     var W = window.open(url);
-    W.window.print();
+    // W.window.print();
 }
 
 function randomDate(start, end) {
@@ -93,7 +92,7 @@ function randomDate(start, end) {
 
 // search
 $('#transaction-search-bar').keyup(function() {
-    var $rows = $('#transaction-table-body tr');
+    var $rows = $('#detail-table-body tr');
     var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
     
     $rows.show().filter(function() {

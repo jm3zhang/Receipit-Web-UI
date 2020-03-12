@@ -37,32 +37,22 @@ $.ajax({
                         recceipt_url = data.image_url;
                         var detailTableBody = document.getElementById("detail-table-body");
                         var tableHtml = '';
-                        tableHtml = tableHtml + '<tr>' + 
-                                                '<td class="text-center text-muted">' + data.receipt_id + '</td>' + 
-                                                '<td>' + 
-                                                    '<div class="widget-content p-0">' + 
-                                                        '<div class="widget-content-wrapper">' + 
-                                                            '<div class="widget-content-left mr-3">' + 
-                                                                '<div class="widget-content-left">' + 
-                                                                    '<img width="40" class="rounded-circle" src="http://logo.clearbit.com/' + data.merchant.toLowerCase() + '.ca" alt="">' + 
-                                                                '</div>' + 
-                                                            '</div>' + 
-                                                            '<div id="store-name-id" class="widget-content-left flex2">' + 
-                                                                '<div class="widget-heading">' + data.merchant + '</div>' + 
-                                                                '<div class="widget-subheading opacity-7">' + data.postcode + '</div>' + 
-                                                            '</div>' + 
-                                                        '</div>' + 
-                                                    '</div>' + 
-                                                '</td>' + 
-                                                '<td class="text-center">' + new Date(data.purchase_date) + '</td>' + 
-                                                '<td class="text-center">$ ' + data.total_amount+ '</td>' + 
-                                                '<td class="text-center">' + 
-                                                    '<div class="badge badge-success">Completed</div>' + 
-                                                '</td>' + 
-                                                '<td class="text-center">' + 
-                                                    '<button type="button" onclick="displayAll()" class="btn btn-primary btn-sm">Display All </button>' +
-                                                '</td>' + 
-                                            '</tr>';
+                        var counter = 1;
+                        for (var product of data.products){
+                            tableHtml = tableHtml + '<tr>' + 
+                                                    '<td class="text-center text-muted">' + counter + '</td>' + 
+                                                    '<td >' + product.name + '</td>' + 
+                                                    '<td class="text-center">' + new Date(product.createdAt) + '</td>' + 
+                                                    '<td class="text-center">$ ' + product.price+ '</td>' + 
+                                                    '<td class="text-center">' + 
+                                                        '<div class="badge badge-success">Completed</div>' + 
+                                                    '</td>' + 
+                                                    '<td class="text-center">' + 
+                                                        '<button type="button" onclick="displayAll()" class="btn btn-primary btn-sm">Display All </button>' +
+                                                    '</td>' + 
+                                                '</tr>';
+                            counter ++;
+                        }
                         detailTableBody.innerHTML = tableHtml;
 
                         document.getElementById("detail-receipt-image").src = data.image_url;

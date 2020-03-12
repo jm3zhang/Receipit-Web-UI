@@ -1,3 +1,163 @@
+var authToken;
+$.ajax({
+        url: "https://receipit-rest-api.herokuapp.com/auth/login",
+        type: "POST",
+        data: {password:"123",email:"test2@android.com"},
+        dataType: "html"
+        }).done(function(data){
+            data = JSON.parse(data);
+            var user_id = data.userInfo.user_id;
+            var authToken = data.authToken;
+            var date = new Date();
+            $.ajax({
+                url: "https://receipit-rest-api.herokuapp.com/receipt",
+                type: "GET",
+                data: {
+                    "userId": user_id,
+                    "startDate": new Date(date.getFullYear(), date.getMonth(), 1),
+                    "endDate": date},
+                headers: { 'Authorization': authToken },
+                dataType: "html"
+                }).done(function(data){
+                    
+                    data = JSON.parse(data);
+                    console.log(data);
+
+                    var totalExpense = 0;
+                    var numTrans = 0;
+                    var lastTotalExpense = 0;
+                    var lastNumTrans = 0;
+                    console.log(data.receipts);
+                    if(data.receipts != undefined){
+                        for(var receipt of data.receipts){
+                            totalExpense += parseFloat(receipt.total_amount);
+                            numTrans ++;
+                        }
+                    }
+                    
+
+                    document.getElementById("totalExpr").innerHTML = "$ " + totalExpense;
+                    document.getElementById("totalTrans").innerHTML = numTrans;
+                    document.getElementById("avgExpr").innerHTML = "$ " + (totalExpense/numTrans).toFixed(2);;
+
+                    $.ajax({
+                        url: "https://receipit-rest-api.herokuapp.com/receipt",
+                        type: "GET",
+                        data: {
+                            "userId": user_id,
+                            "startDate": new Date(date.getFullYear(), date.getMonth() - 1, 1),
+                            "endDate": new Date(date.getFullYear(), date.getMonth(), 1)},
+                        headers: { 'Authorization': authToken },
+                        dataType: "html"
+                        }).done(function(data){
+                            lastTotalExpense = 0;
+                            lastNumTrans = 0;
+                            if(data.receipts != undefined){
+                                for(var receipt of data.receipts){
+                                    lastTotalExpense += parseFloat(receipt.total_amount);
+                                    lastNumTrans ++;
+                                }
+                            }
+                            if((totalExpense/lastTotalExpense) == Infinity){
+                                lastNumTrans = 1;
+                            }
+                            if((numTrans/lastNumTrans) == Infinity){
+                                lastNumTrans = 1;
+                            }
+                            console.log(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)));
+                            // console.log((totalExpense/numTrans));
+                            // console.log((lastTotalExpense/lastNumTrans));
+                            if(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)) == NaN){
+                                
+                                console.log(((totalExpense/numTrans)/(lastTotalExpense/lastNumTrans)));
+                            }
+                        });
+
+                });
+
+
+            $.ajax({
+                url: "https://receipit-rest-api.herokuapp.com/receipt?userId=" + user_id,
+                type: "GET",
+                headers: { 'Authorization': authToken },
+                dataType: "html"
+                }).done(function(data){
+                    data = JSON.parse(data);
+                    
+                    // make table
+                    var recentTransactionTableBody = document.getElementById("recent-transaction-table-body");
+                    var tableHtml = '';
+                    var counter = 1;
+                    for (var receipt of data.receipts){
+                        if (counter == 6){
+                            break;
+                        }
+                        tableHtml = tableHtml + '<tr>' + 
+                                                    '<td class="text-center text-muted">' + counter + '</td>' + 
+                                                    '<td>' + 
+                                                        '<div class="widget-content p-0">' + 
+                                                            '<div class="widget-content-wrapper">' + 
+                                                                '<div class="widget-content-left mr-3">' + 
+                                                                    '<div class="widget-content-left">' + 
+                                                                        '<img width="40" class="rounded-circle" src="http://logo.clearbit.com/' + receipt.merchant.toLowerCase().replace(/\s/g,'') + '.ca" alt="">' + 
+                                                                    '</div>' + 
+                                                                '</div>' + 
+                                                                '<div id="store-name-id" class="widget-content-left flex2">' + 
+                                                                    '<div class="widget-heading">' + receipt.merchant + '</div>' + 
+                                                                    '<div class="widget-subheading opacity-7">' + receipt.postcode + '</div>' + 
+                                                                '</div>' + 
+                                                            '</div>' + 
+                                                        '</div>' + 
+                                                    '</td>' + 
+                                                    '<td class="text-center">' + new Date(receipt.purchase_date) + '</td>' + 
+                                                    '<td class="text-center">$ ' + receipt.total_amount+ '</td>' + 
+                                                    '<td class="text-center">' + 
+                                                        '<div class="badge badge-success">Completed</div>' + 
+                                                    '</td>' + 
+                                                    '<td class="text-center">' + 
+                                                        '<button type="button" onclick="viewDetial(this.id)" id="transaction_table_id_' + receipt.receipt_id+ '" class="btn btn-primary btn-sm">Details</button>' + 
+                                                    '</td>' + 
+                                                '</tr>';
+                        counter ++;
+                    }
+
+                    recentTransactionTableBody.innerHTML = tableHtml;
+
+
+        
+                });
+        });
+
+
+// print
+function printPage() {
+    window.print();
+}
+
+function randomDate(start, end) {
+    var d = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+// search
+$('#transaction-search-bar').keyup(function() {
+    var $rows = $('#transaction-table-body tr');
+    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+    
+    $rows.show().filter(function() {
+        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+        return !~text.indexOf(val);
+    }).hide();
+});
+
+
 // bar
 var ctxExpenditureReport = $('#expenditureReport');
 ctxExpenditureReport.height(200);    
@@ -271,46 +431,45 @@ function printPage() {
     window.print();
 }
 
-// make table
-window.onload = function load(){
-    var transactionTableBody = document.getElementById("recent-transaction-table-body");
-    var tableHtml = '';
-    var storeImage = ["walmart.png", "Costco.png", "target.png", "sobeys.png", "7-11.png"];
-    var storeName = ["Walmart", "Costco", "Target", "Sobeys", "Seven Eleven"];
-    var location = ["70 Bridgeport Rd E, Waterloo", "930 Erb St W, Waterloo", "7414 Niagara Falls Blvd, Niagara Falls, NY, US", "450 Columbia St W, Waterloo", "256 King St N, Waterloo"];
-    for (var i = 1; i <= 5; i++){
-        tableHtml = tableHtml + '<tr>' + 
-                                    '<td class="text-center text-muted">' + i + '</td>' + 
-                                    '<td>' + 
-                                        '<div class="widget-content p-0">' + 
-                                            '<div class="widget-content-wrapper">' + 
-                                                '<div class="widget-content-left mr-3">' + 
-                                                    '<div class="widget-content-left">' + 
-                                                        '<img width="40" class="rounded-circle" src="assets/images/' + storeImage[i%5] + '" alt="">' + 
-                                                    '</div>' + 
-                                                '</div>' + 
-                                                '<div id="store-name-id" class="widget-content-left flex2">' + 
-                                                    '<div class="widget-heading">' + storeName[i%5] + '</div>' + 
-                                                    '<div class="widget-subheading opacity-7">' + location[i%5] + '</div>' + 
-                                                '</div>' + 
-                                            '</div>' + 
-                                        '</div>' + 
-                                    '</td>' + 
-                                    '<td class="text-center">' + randomDate(new Date(2019, 0, 1), new Date()) + '</td>' + 
-                                    '<td class="text-center">$ ' + Math.floor((Math.random() * 100) + 10) + '</td>' + 
-                                    '<td class="text-center">' + 
-                                        '<div class="badge badge-success">Completed</div>' + 
-                                    '</td>' + 
-                                    '<td class="text-center">' + 
-                                        '<button type="button" onclick="viewDetial(this.id)" id="transaction_table_id_' + i + '" class="btn btn-primary btn-sm">Details</button>' + 
-                                    '</td>' + 
-                                '</tr>';
-    }
+// // make table
+// window.onload = function load(){
+//     var transactionTableBody = document.getElementById("recent-transaction-table-body");
+//     var tableHtml = '';
+//     var storeImage = ["walmart.png", "Costco.png", "target.png", "sobeys.png", "7-11.png"];
+//     var storeName = ["Walmart", "Costco", "Target", "Sobeys", "Seven Eleven"];
+//     var location = ["70 Bridgeport Rd E, Waterloo", "930 Erb St W, Waterloo", "7414 Niagara Falls Blvd, Niagara Falls, NY, US", "450 Columbia St W, Waterloo", "256 King St N, Waterloo"];
+//     for (var i = 1; i <= 5; i++){
+//         tableHtml = tableHtml + '<tr>' + 
+//                                     '<td class="text-center text-muted">' + i + '</td>' + 
+//                                     '<td>' + 
+//                                         '<div class="widget-content p-0">' + 
+//                                             '<div class="widget-content-wrapper">' + 
+//                                                 '<div class="widget-content-left mr-3">' + 
+//                                                     '<div class="widget-content-left">' + 
+//                                                         '<img width="40" class="rounded-circle" src="assets/images/' + storeImage[i%5] + '" alt="">' + 
+//                                                     '</div>' + 
+//                                                 '</div>' + 
+//                                                 '<div id="store-name-id" class="widget-content-left flex2">' + 
+//                                                     '<div class="widget-heading">' + storeName[i%5] + '</div>' + 
+//                                                     '<div class="widget-subheading opacity-7">' + location[i%5] + '</div>' + 
+//                                                 '</div>' + 
+//                                             '</div>' + 
+//                                         '</div>' + 
+//                                     '</td>' + 
+//                                     '<td class="text-center">' + randomDate(new Date(2019, 0, 1), new Date()) + '</td>' + 
+//                                     '<td class="text-center">$ ' + Math.floor((Math.random() * 100) + 10) + '</td>' + 
+//                                     '<td class="text-center">' + 
+//                                         '<div class="badge badge-success">Completed</div>' + 
+//                                     '</td>' + 
+//                                     '<td class="text-center">' + 
+//                                         '<button type="button" onclick="viewDetial(this.id)" id="transaction_table_id_' + i + '" class="btn btn-primary btn-sm">Details</button>' + 
+//                                     '</td>' + 
+//                                 '</tr>';
+//     }
 
-    transactionTableBody.innerHTML = tableHtml;
+//     transactionTableBody.innerHTML = tableHtml;
 
-    
-}
+// }
 
 // gen date
 function randomDate(start, end) {

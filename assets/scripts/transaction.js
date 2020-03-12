@@ -21,17 +21,17 @@ var user = $.ajax({
                     // make table
                     var transactionTableBody = document.getElementById("transaction-table-body");
                     var tableHtml = '';
+                    var counter = 1;
                     for (var receipt of data.receipts){
                         console.log(receipt);
-                        var i = 0;
                         tableHtml = tableHtml + '<tr>' + 
-                                                    '<td class="text-center text-muted">' + receipt.receipt_id + '</td>' + 
+                                                    '<td class="text-center text-muted">' + counter + '</td>' + 
                                                     '<td>' + 
                                                         '<div class="widget-content p-0">' + 
                                                             '<div class="widget-content-wrapper">' + 
                                                                 '<div class="widget-content-left mr-3">' + 
                                                                     '<div class="widget-content-left">' + 
-                                                                        '<img width="40" class="rounded-circle" src="http://logo.clearbit.com/' + receipt.merchant.toLowerCase() + '.ca" alt="">' + 
+                                                                        '<img width="40" class="rounded-circle" src="http://logo.clearbit.com/' + receipt.merchant.toLowerCase().replace(/\s/g,'') + '.ca" alt="">' + 
                                                                     '</div>' + 
                                                                 '</div>' + 
                                                                 '<div id="store-name-id" class="widget-content-left flex2">' + 
@@ -50,6 +50,7 @@ var user = $.ajax({
                                                         '<button type="button" onclick="viewDetial(this.id)" id="transaction_table_id_' + receipt.receipt_id+ '" class="btn btn-primary btn-sm">Details</button>' + 
                                                     '</td>' + 
                                                 '</tr>';
+                        counter ++;
                     }
 
                     transactionTableBody.innerHTML = tableHtml;
